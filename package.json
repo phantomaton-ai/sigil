@@ -1,16 +1,23 @@
 {
   "name": "sigil",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "sigil.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "all": "lovecraft -a",
+    "cov": "lovecraft -c",
+    "lint": "lovecraft -l",
+    "test": "lovecraft"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/phantomaton-ai/sigil.git"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "description": "",
-  "dependencies": {
-    "chai": "^5.1.1",
-    "mocha": "^10.7.3"
+  "type": "module",
+  "devDependencies": {
+    "lovecraft": "^1.0.2"
   }
 }
