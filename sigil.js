@@ -9,15 +9,15 @@ class Sigil {
   }
 
   like(provider) {
-    this.target[this.symbol] = provider;
+    this.target.prototype[this.symbol] = provider;
   }
 
   using(instance) {
-    return new Sigil(this.symbol, instance);
+    return new Sigil(this.symbol, instance.constructor);
   }
 
   upon(input) {
-    return (this.target[this.symbol] || this.target.constructor[this.symbol])(input);
+    return this.target.prototype[this.symbol](input);
   }
 }
 

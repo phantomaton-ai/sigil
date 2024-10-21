@@ -1,47 +1,36 @@
 import { expect, stub } from 'lovecraft';
 import sigil from './sigil.js';
 
+let greet;
+
 class User {
   greet(name) {
-    return this.converse.upon(name);
+    return greet.using(this).upon(name);
   }
 }
+class Admin extends User {}
+class Guest extends User {}
 
-class AdminUser extends User {
-  // Inherits greet method from User
-}
-
-class GuestUser extends Object {
-  greet(name) {
-    return this.converse.upon(name);
-  }
-}
+const user = new User();
+const admin = new Admin();
+const guest = new Guest();
 
 describe('Sigil', () => {
-  describe('Providers', () => {
-    it('should allow registering and resolving a simple provider', () => {
-      const converse = sigil('converse');
+  beforeEach(() => {
+    greet = sigil('greet');
+  });
 
-      converse.as(User).like((name) => `Hello, ${name}!`);
-      converse.as(AdminUser).like((name) => `Greetings, ${name}!`);
-      converse.like((name) => `Hi there, ${name}!`);
+  it('should allow registering and resolving a simple provider', () => {
+    greet.as(User).like((name) => `Hello, ${name}!`);
+    greet.as(Admin).like((name) => `Greetings, ${name}!`);
 
-      const user = new User();
-      const adminUser = new AdminUser();
-      const guestUser = new GuestUser();
+    expect(user.greet('Alice')).to.equal('Hello, Alice!');
+    expect(admin.greet('Bob')).to.equal('Greetings, Bob!');
+    expect(guest.greet('Charlie')).to.equal('Hello, Charlie!');
+  });
 
-      expect(user.greet('Alice')).to.equal('Hello, Alice!');
-      expect(adminUser.greet('Bob')).to.equal('Greetings, Bob!');
-      expect(guestUser.greet('Charlie')).to.equal('Hi there, Charlie!');
-    });
-
-    it('should allow registering and resolving a provider without a target', () => {
-      const converse = sigil('converse');
-
-      converse.like((name) => `Hey there, ${name}!`);
-
-      const user = new User();
-      expect(user.greet('Dave')).to.equal('Hey there, Dave!');
-    });
+  it('should allow registering and resolving a provider without a target', () => {
+    greet.like((name) => `Hey there, ${name}!`);
+    expect(user.greet('Dave')).to.equal('Hey there, Dave!');
   });
 });
