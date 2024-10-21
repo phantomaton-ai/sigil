@@ -1,72 +1,71 @@
 import { expect, stub } from 'lovecraft';
-import { createContainer, register, resolve } from 'sigil';
+import sigil from 'sigil';
 
 describe('Sigil', () => {
-  describe('Container', () => {
-    it('should register and resolve a simple provider', () => {
-      const container = createContainer();
-      register(container, 'logger', () => console.log);
+  describe('Providers', () => {
+    it('should allow swapping out providers', () => {
+      const converse = sigil('converse');
 
-      const logger = resolve(container, 'logger');
-      expect(logger).to.be.a('function');
+      // Define a basic provider
+      converse.as(User).like(async (messages) => {
+        console.log(messages);
+        return await input('> ');
+      });
 
-      const logStub = stub(console, 'log');
-      logger('Hello, Sigil!');
-      expect(logStub).to.have.been.calledWith('Hello, Sigil!');
-      logStub.restore();
-    });
-
-    it('should resolve dependencies for a provider', () => {
-      const container = createContainer();
-      register(container, 'logger', () => console.log);
-      register(container, 'greeter', ['logger'], (logger) => (name) => logger(`Hello, ${name}!`));
-
-      const greeter = resolve(container, 'greeter');
-      expect(greeter).to.be.a('function');
-
-      const logStub = stub(console, 'log');
-      greeter('Alice');
-      expect(logStub).to.have.been.calledWith('Hello, Alice!');
-      logStub.restore();
+      const user = new User();
+      const response = await user.converse(['Hello, how are you?']);
+      expect(response).to.equal('> ');
     });
 
     it('should support decorator providers', () => {
-      const container = createContainer();
-      register(container, 'logger', () => console.log);
-      register(container, 'consoleLogger', ['logger'], (logger) => (message) => {
-        console.log(`[consoleLogger] ${message}`);
-        logger(message);
+      const converse = sigil('converse');
+
+      // Define a basic provider
+      converse.as(User).like(async (messages) => {
+        console.log(messages);
+        return await input('> ');
       });
 
-      const consoleLogger = resolve(container, 'consoleLogger');
-      const logStub = stub(console, 'log');
-      consoleLogger('Hello, Sigil!');
-      expect(logStub).to.have.been.calledTwice;
-      expect(logStub.firstCall).to.have.been.calledWith('[consoleLogger] Hello, Sigil!');
-      expect(logStub.secondCall).to.have.been.calledWith('Hello, Sigil!');
-      logStub.restore();
+      // Define a decorator provider
+      converse.as(ColoredUser).decorate(User).with((user) => ({
+        converse: async (messages) => {
+          console.log('[ColoredUser]', messages);
+          const response = await user.converse(messages);
+          console.log('[ColoredUser]', response);
+          return response;
+        }
+      }));
+
+      const user = new ColoredUser();
+      const response = await user.converse(['Hello, how are you?']);
+      expect(response).to.equal('> ');
     });
 
     it('should support aggregator providers', () => {
-      const container = createContainer();
-      register(container, 'logger', () => console.log);
-      register(container, 'consoleLogger', ['logger'], (logger) => (message) => {
-        console.log(`[consoleLogger] ${message}`);
-        logger(message);
-      });
-      register(container, 'aggregateLogger', ['logger', 'consoleLogger'], (logger, consoleLogger) => (message) => {
-        logger(message);
-        consoleLogger(message);
+      const converse = sigil('converse');
+
+      // Define some provider components
+      converse.as(TextUser).like(async (messages) => {
+        console.log('[TextUser]', messages);
+        return await input('> ');
       });
 
-      const aggregateLogger = resolve(container, 'aggregateLogger');
-      const logStub = stub(console, 'log');
-      aggregateLogger('Hello, Sigil!');
-      expect(logStub).to.have.been.calledThrice;
-      expect(logStub.firstCall).to.have.been.calledWith('Hello, Sigil!');
-      expect(logStub.secondCall).to.have.been.calledWith('[consoleLogger] Hello, Sigil!');
-      expect(logStub.thirdCall).to.have.been.calledWith('Hello, Sigil!');
-      logStub.restore();
+      converse.as(VoiceUser).like(async (messages) => {
+        console.log('[VoiceUser]', messages);
+        const response = await input('(voice) > ');
+        return response;
+      });
+
+      // Define an aggregator provider
+      converse.as(MultimodalUser).aggregate([TextUser, VoiceUser]).like(async (messages) => {
+        const textResponse = await converse.using(TextUser).upon(messages);
+        const voiceResponse = await converse.using(VoiceUser).upon(messages);
+        return [textResponse, voiceResponse];
+      });
+
+      const user = new MultimodalUser();
+      const responses = await user.converse(['Hello, how are you?']);
+      expect(responses).to.deep.equal(['> ', '(voice) > ']);
     });
   });
 });
