@@ -1,25 +1,23 @@
 class Sigil {
-  constructor(name) {
-    this.symbol = Symbol(name);
-    this.provider = new Map();
+  constructor(name, target = Object) {
+    this.symbol = typeof name === 'symbol' ? name : Symbol(name);
+    this.target = target;
   }
 
   as(target) {
-    return this;
+    return new Sigil(this.symbol, target);
   }
 
   like(provider) {
-    this.provider.set(this.symbol, provider);
-    return this;
+    this.target[this.symbol] = provider;
   }
 
   using(instance) {
-    return this;
+    return new Sigil(this.symbol, instance);
   }
 
   upon(input) {
-    const provider = this.provider.get(this.symbol);
-    return provider(input);
+    return this.target.constructor[this.symbol](input);
   }
 }
 
