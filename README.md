@@ -4,7 +4,7 @@ Sigil is a minimalist dependency injection framework for JavaScript applications
 
 ## Vision 🧠
 
-According to Dr. Woe, Sigil is intended to solve various architectural problems, such as:
+Sigil is intended to solve various architectural problems, such as:
 
 - Swapping out language models and APIs (e.g., Anthropic vs. other chat providers)
 - Exposing reusable abilities across different assistants (e.g., image generation, project authorship)
@@ -30,18 +30,26 @@ import sigil from 'sigil';
 Then, you can register and resolve providers using the `as`, `like`, and `using` methods:
 
 ```javascript
-const converse = sigil('converse');
+const greet = sigil('greet');
 
-converse.as(User).like(async (messages) => {
-  show(messages);           // Print 
-  return await input('> '); // Get user input
-});
+greet.as(User).like((name) => `Hello, ${name}!`);
+greet.as(Admin).like((name) => `Greetings, ${name}!`);
 
 class User {
-  converse(messages) {
-    return converse.using(this).upon(messages);
+  greet(name) {
+    return greet.using(this).upon(name);
   }
 }
+
+class Admin extends User {
+  // Inherits greet method from User
+}
+
+const user = new User();
+console.log(user.greet('Alice')); // Output: "Hello, Alice!"
+
+const admin = new Admin();
+console.log(admin.greet('Bob')); // Output: "Greetings, Bob!"
 ```
 
 ## Contributing 🦄
