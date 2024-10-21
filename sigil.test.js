@@ -27,5 +27,21 @@ describe('Sigil', () => {
       expect(user.greet('Alice')).to.equal('Hello, Alice!');
       expect(admin.greet('Bob')).to.equal('Greetings, Bob!');
     });
+
+    it('should allow registering and resolving a provider without a target', () => {
+      const greet = sigil('greet');
+
+      greet.like((name) => `Hey there, ${name}!`);
+
+      expect(greet.upon('Charlie')).to.equal('Hey there, Charlie!');
+    });
+
+    it('should allow resolving a provider without an instance', () => {
+      const greet = sigil('greet');
+
+      greet.as(Object).like((name) => `Sup, ${name}?`);
+
+      expect(greet.using({}).upon('David')).to.equal('Sup, David?');
+    });
   });
 });
