@@ -11,12 +11,6 @@ Sigil is intended to solve various architectural problems, such as:
 - Exposing reusable conversational experiences (e.g., chat interfaces, infinite image montages)
 - Supporting multiple interfaces (e.g., web, command-line, REST APIs)
 
-To achieve this, Sigil utilizes three major abstractions:
-
-1. **Providers**: Specific implementations that can be swapped in and out (e.g., the Anthropic adapter for conversation capabilities).
-2. **Aggregators**: Strategies for dealing with multiple providers (e.g., raising errors for singletons, fan-out/fan-in for combining results).
-3. **Decorators**: Wrappers that modify the behavior of other components by intercepting calls and potentially modifying inputs and outputs.
-
 Sigil aims to use JavaScript `Symbol`s as type identifiers to solve the problem of namespace collisions and provide a fluent, natural-looking API for defining and using these architectural concepts.
 
 ## Usage 🧠
