@@ -18,7 +18,7 @@ Sigil aims to use JavaScript `Symbol`s as type identifiers to solve the problem 
 To use Sigil, first import the `sigil` function:
 
 ```javascript
-import sigil from 'sigil';
+import sigil from 'sigilium';
 ```
 
 Then, you can register and resolve providers using the `as`, `like`, and `using` methods:
