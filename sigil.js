@@ -17,7 +17,7 @@ class Sigil {
   }
 
   upon(input) {
-    return this.target.constructor[this.symbol](input);
+    return (this.target[this.symbol] || this.target.constructor[this.symbol])(input);
   }
 }
 
