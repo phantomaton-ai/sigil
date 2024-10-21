@@ -1,36 +1,25 @@
-class As {
-  constructor(sigil, target) {
-    this.sigil = sigil;
-    this.target = target;
-  }
-
-  like(provider) {
-    this.target[this.sigil.symbol] = provider;
-  }
-}
-
-class Using {
-  constructor(sigil, instance) {
-    this.sigil = sigil;
-    this.instance = instance;
-  }
-
-  upon(input) {
-    return this.instance.constructor[this.sigil.symbol](input);
-  }
-}
-
 class Sigil {
   constructor(name) {
     this.symbol = Symbol(name);
+    this.provider = new Map();
   }
 
   as(target) {
-    return new As(this, target);
+    return this;
+  }
+
+  like(provider) {
+    this.provider.set(this.symbol, provider);
+    return this;
   }
 
   using(instance) {
-    return new Using(this, instance);
+    return this;
+  }
+
+  upon(input) {
+    const provider = this.provider.get(this.symbol);
+    return provider(input);
   }
 }
 
