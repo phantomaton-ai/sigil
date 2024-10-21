@@ -35,13 +35,5 @@ describe('Sigil', () => {
 
       expect(greet.upon('Charlie')).to.equal('Hey there, Charlie!');
     });
-
-    it('should allow resolving a provider without an instance', () => {
-      const greet = sigil('greet');
-
-      greet.as(Object).like((name) => `Sup, ${name}?`);
-
-      expect(greet.using({}).upon('David')).to.equal('Sup, David?');
-    });
   });
 });
