@@ -6,7 +6,7 @@ class Sigil {
     this.symbol[SIGIL] = this;
     this.decorators = [];
     this.providers = [];
-    this.compose = options.compose || providers => providers[0];
+    this.compose = options.compose;
   }
 
   by(provider) {
@@ -17,7 +17,7 @@ class Sigil {
     this.decorators.push(decorator);
   }
   
-  upon(object) {}
+  upon(object) {
     object[this.symbol] = (...args) => this.invoke(...args);
   }
 }
