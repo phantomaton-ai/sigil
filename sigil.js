@@ -1,16 +1,14 @@
-const providers = new Map();
-
 const sigil = (name) => {
+  const symbol = Symbol(name);
   return {
     as: (target) => ({
       like: (provider) => {
-        providers.set(target, provider);
+        target[symbol] = provider;
       }
     }),
     using: (instance) => ({
       upon: (input) => {
-        const provider = providers.get(instance.constructor);
-        return provider(input);
+        return instance.constructor[symbol](input);
       }
     })
   };
