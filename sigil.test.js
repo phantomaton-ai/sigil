@@ -1,5 +1,5 @@
 import { expect, stub } from 'lovecraft';
-import sigil from 'sigil';
+import sigil from './sigil.js';
 
 describe('Sigil', () => {
   describe('Providers', () => {
