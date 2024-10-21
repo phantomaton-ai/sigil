@@ -1,27 +1,19 @@
-const SIGIL = Symbol('sigil');
+const providers = new Map();
 
-class Sigil {
-  constructor(options) {
-    this.symbol = Object(Symbol(options.name));
-    this.symbol[SIGIL] = this;
-    this.decorators = [];
-    this.providers = [];
-    this.compose = options.compose;
-  }
-
-  by(provider) {
-    this.providers.push(provider);
-  }
-
-  using(decorator) {
-    this.decorators.push(decorator);
-  }
-  
-  upon(object) {
-    object[this.symbol] = (...args) => this.invoke(...args);
-  }
-}
-
-const sigil = (options = {}) => new Sigil(options);
+const sigil = (name) => {
+  return {
+    as: (target) => ({
+      like: (provider) => {
+        providers.set(target, provider);
+      }
+    }),
+    using: (instance) => ({
+      upon: (input) => {
+        const provider = providers.get(instance.constructor);
+        return provider(input);
+      }
+    })
+  };
+};
 
 export default sigil;
